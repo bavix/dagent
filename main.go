@@ -42,8 +42,8 @@ func main() {
 
 	actMetric := actions.Metrics{Store: &storeObject}
 
-	e.GET("/", actMetric.Get)
-	e.POST("/", actMetric.Post)
+	e.GET("/metrics", actMetric.Get)
+	e.POST("/metrics", actMetric.Post)
 
 	e.Logger.Fatal(e.Start(os.Getenv("SERVER_ADDR")))
 }
