@@ -4,12 +4,14 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type MetricDto struct {
-	Tags  map[string]string `json:"tags"`
-	Name  string            `json:"name" validate:"required"`
-	Value int64             `json:"value" validate:"required"`
+	Tags     map[string]string `json:"tags" validate:"gt=0,dive,keys,min=1,endkeys,min=1"`
+	Name     string            `json:"name" validate:"required,min=1"`
+	Value    *uint64           `json:"value" validate:"required,min=0"`
+	Duration *time.Duration    `json:"duration" validate:"omitempty,min=1s,max=2h"`
 }
 
 func (m *MetricDto) UniqueId() string {
@@ -17,7 +19,7 @@ func (m *MetricDto) UniqueId() string {
 }
 
 func (m *MetricDto) ToString() string {
-	return m.UniqueId() + " " + strconv.FormatInt(m.Value, 10)
+	return m.UniqueId() + " " + strconv.FormatUint(*m.Value, 10)
 }
 
 func (m *MetricDto) tagsToString() string {

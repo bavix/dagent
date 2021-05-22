@@ -17,12 +17,17 @@ func New(instance *redis.Client, cacheKey string, duration time.Duration) Metric
 	return MetricStore{redis: instance, cacheKey: cacheKey, duration: duration}
 }
 
-func (m *MetricStore) Set(key string, val string) {
+func (m *MetricStore) Set(key string, val string, duration *time.Duration) {
 	var value interface{} = val
+	expire := m.duration
+	if duration != nil {
+		expire = *duration
+	}
+
 	m.redis.Set(context.Background(),
 		m.cacheKey+":"+key,
 		value,
-		m.duration)
+		expire)
 }
 
 func (m *MetricStore) ReadAll() []string {

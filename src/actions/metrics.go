@@ -41,7 +41,17 @@ func (a *Metrics) Post(c echo.Context) error {
 	}
 
 	for _, s := range m.Data {
-		jaegertracing.TraceFunction(c, a.Store.Set, s.UniqueId(), s.ToString())
+		if err := c.Validate(s); err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+	}
+
+	for _, s := range m.Data {
+		jaegertracing.TraceFunction(c,
+			a.Store.Set,
+			s.UniqueId(),
+			s.ToString(),
+			s.Duration)
 	}
 
 	return c.JSON(http.StatusOK, struct {
